@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS agendas (
+    id SERIAL PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    start_time TEXT NOT NULL,
+    end_time TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
