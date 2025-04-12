@@ -33,7 +33,7 @@ func (r *UserRepository) GetByID(id string) (*domain.User, error) {
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, domain.ErrUserNotFound
 		}
 		return nil, err
 	}
@@ -44,12 +44,12 @@ func (r *UserRepository) GetByID(id string) (*domain.User, error) {
 func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 	query := "SELECT id, name, email, password FROM users WHERE email = $1"
 	row := r.db.QueryRow(query, email)
-	
+
 	var user domain.User
 	err := row.Scan(&user.ID, &user.Name, &user.Email, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, domain.ErrUserNotFound
 		}
 		return nil, err
 	}
