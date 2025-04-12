@@ -1,0 +1,25 @@
+# 🏖️ Beach Manager
+
+Sistema de gerenciamento de agendamentos para quadras de vôlei de areia, desenvolvido em Go com arquitetura limpa e modular.
+
+---
+
+## 📁 Estrutura do Projeto
+
+├── .gitignore ├── cmd │ └── app │ └── main.go # Ponto de entrada da aplicação ├── docker-compose.yaml # Orquestração dos containers (DB, etc) ├── go.mod / go.sum # Gerenciamento de dependências Go ├── internal # Código interno da aplicação │ ├── domain # Entidades e contratos do domínio │ │ ├── agenda.go │ │ ├── auth.go │ │ ├── errors.go │ │ ├── repository.go │ │ └── user.go │ ├── dto # Estruturas de entrada/saída (input/output) │ │ ├── agenda.go │ │ ├── auth.go │ │ └── user.go │ ├── provider # Integrações com bibliotecas externas (JWT, etc) │ │ └── jwt.go │ ├── repository # Implementações dos repositórios (banco de dados) │ │ ├── agenda_repository.go │ │ └── user_repository.go │ ├── service # Regras de negócio / lógica da aplicação │ │ ├── agenda_service.go │ │ ├── auth.service.go │ │ └── user_service.go │ └── web # Camada web (HTTP handlers e servidor) │ ├── handlers │ │ ├── agenda_handler.go │ │ ├── auth_handler.go │ │ └── user_handler.go │ └── server │ └── server.go └── migrations # Scripts SQL de criação das tabelas ├── 000001_create_users_table.down.sql ├── 000001_create_users_table.up.sql ├── 000002_create_agendas_table.down.sql └── 000002_create_agendas_table.up.sql
+
+
+---
+
+## 🚀 Como rodar o projeto
+
+### Pré-requisitos
+
+- Go 1.20+
+- Docker + Docker Compose
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/seuusuario/beach-manager.git
+cd beach-manager
