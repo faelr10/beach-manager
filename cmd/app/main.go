@@ -3,15 +3,18 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"go/beach-manager/internal/provider"
 	"go/beach-manager/internal/repository"
 	"go/beach-manager/internal/service"
 	"go/beach-manager/internal/web/server"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 
-	_"github.com/lib/pq"
+	_ "github.com/lib/pq"
 )
 
 func getEnv(key, defaulValue string) string {
@@ -43,12 +46,24 @@ func main() {
 	}
 	defer db.Close()
 
+	secret := os.Getenv("JWT_SECRET")
+	expMinutes, err := strconv.Atoi(os.Getenv("JWT_EXP_MINUTES"))
+	if err != nil {
+		log.Fatal("JWT_EXP_MINUTES is invalid")
+	}
+
+	jwtProvider := provider.NewJWTProvider(secret, time.Duration(expMinutes)*time.Minute)
+
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 
+	agendaRepository := repository.NewAgendaRepository(db)
+	agendaService := service.NewAgendaService(agendaRepository)
+	authService := service.NewAuthService(userRepository, *jwtProvider)
+
 	port := getEnv("PORT", "8082")
 
-	srv := server.NewServer(userService, port)
+	srv := server.NewServer(userService, agendaService, authService, port)
 	srv.ConfigureRoutes()
 
 	if err := srv.Start(); err != nil {
