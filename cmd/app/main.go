@@ -63,8 +63,7 @@ func main() {
 
 	port := getEnv("PORT", "8082")
 
-	srv := server.NewServer(userService, agendaService, authService, port)
-	srv.ConfigureRoutes()
+	srv := server.NewServer(userService, agendaService, authService, jwtProvider, port)
 
 	if err := srv.Start(); err != nil {
 		log.Fatalf("Error starting server: %v", err)

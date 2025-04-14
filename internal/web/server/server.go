@@ -1,10 +1,13 @@
 package server
 
 import (
+	"go/beach-manager/internal/provider"
 	"go/beach-manager/internal/service"
 	"go/beach-manager/internal/web/handlers"
+	"go/beach-manager/internal/web/middleware"
 	"net/http"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 type Server struct {
@@ -13,38 +16,55 @@ type Server struct {
 	userService   *service.UserService
 	agendaService *service.AgendaService
 	authService   *service.AuthService
+	jwtProvider   *provider.JWTProvider 
 	port          string
 }
 
-func NewServer(userService *service.UserService, agendaService *service.AgendaService, authService *service.AuthService, port string) *Server {
+func NewServer(userService *service.UserService, agendaService *service.AgendaService, authService *service.AuthService, jwtProvider *provider.JWTProvider, port string) *Server {
 
 	return &Server{
 		router:        chi.NewRouter(),
 		userService:   userService,
 		agendaService: agendaService,
 		authService:   authService,
+		jwtProvider:   jwtProvider,
 		port:          port,
 	}
 }
 
 func (s *Server) ConfigureRoutes() {
+	// ✅ Adiciona CORS globalmente
+	s.router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
 
 	userHandler := handlers.NewUserHandler(s.userService)
 	agendaHandler := handlers.NewAgendaHandler(s.agendaService)
 	authHandler := handlers.NewAuthHandler(s.authService)
 
-	//Users
+	// Grupo de rotas públicas
 	s.router.Post("/users", userHandler.CreateUser)
 	s.router.Get("/users/{id}", userHandler.GetById)
+	s.router.Post("/auth/login", authHandler.Login)
 
-	//Agendas
-	s.router.Post("/agendas", agendaHandler.CreateAgenda)
-	s.router.Get("/agendas/{id}", agendaHandler.GetAgendaByID)
-	s.router.Get("/agendas", agendaHandler.GetAllAgendas)
+	// Grupo de rotas protegidas
+	s.router.Route("/agendas", func(r chi.Router) {
+		r.Use(middleware.AuthMiddleware(s.jwtProvider)) // aplica o middleware
+
+		r.Post("/", agendaHandler.CreateAgenda)
+		r.Get("/", agendaHandler.GetAllAgendas)
+		r.Get("/{id}", agendaHandler.GetAgendaByID)
+	})
 
 	//Auth
 	s.router.Post("/auth/login", authHandler.Login)
-
+	
 }
 
 func (s *Server) Start() error {
