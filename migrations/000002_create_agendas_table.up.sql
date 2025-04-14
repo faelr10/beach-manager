@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS agendas (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY,
     user_id TEXT NOT NULL,
+    client_name TEXT NOT NULL,
     date TEXT NOT NULL,
     start_time TEXT NOT NULL,
     end_time TEXT NOT NULL,
