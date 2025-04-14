@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"go/beach-manager/internal/domain"
 	"go/beach-manager/internal/dto"
 )
@@ -15,6 +16,8 @@ func NewUserService(repository domain.UserRepository) *UserService {
 
 func (s *UserService) CreateUser(input dto.CreateUserInput) (*dto.UserOutput, error) {
 	user := dto.ToUser(input)
+
+	fmt.Println("User to be created:", user)
 
 	existing, _ := s.repository.GetByEmail(user.Email)
 	if existing != nil {
