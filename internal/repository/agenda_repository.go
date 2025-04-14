@@ -14,8 +14,8 @@ func NewAgendaRepository(db *sql.DB) *AgendaRepository {
 }
 
 func (r *AgendaRepository) Create(agenda *domain.Agenda) error {
-	query := "INSERT INTO agendas (user_id, date, start_time, end_time) VALUES ($1, $2, $3, $4)"
-	_, err := r.db.Exec(query, agenda.UserID, agenda.Date, agenda.StartTime, agenda.EndTime)
+	query := "INSERT INTO agendas (id, user_id, client_name, date, start_time, end_time) VALUES ($1, $2, $3, $4, $5, $6)"
+	_, err := r.db.Exec(query, agenda.ID, agenda.UserID, agenda.ClientName, agenda.Date, agenda.StartTime, agenda.EndTime)
 	if err != nil {
 		return err
 	}
@@ -23,11 +23,11 @@ func (r *AgendaRepository) Create(agenda *domain.Agenda) error {
 }
 
 func (r *AgendaRepository) GetByID(id string) (*domain.Agenda, error) {
-	query := "SELECT id, user_id, date, start_time, end_time FROM agendas WHERE id = $1"
+	query := "SELECT id, user_id, client_name, date, start_time, end_time FROM agendas WHERE id = $1"
 	row := r.db.QueryRow(query, id)
 
 	var agenda domain.Agenda
-	err := row.Scan(&agenda.ID, &agenda.UserID, &agenda.Date, &agenda.StartTime, &agenda.EndTime)
+	err := row.Scan(&agenda.ID, &agenda.UserID, &agenda.ClientName, &agenda.Date, &agenda.StartTime, &agenda.EndTime)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, domain.ErrAgendaNotFound
@@ -39,7 +39,7 @@ func (r *AgendaRepository) GetByID(id string) (*domain.Agenda, error) {
 }
 
 func (r *AgendaRepository) GetAll() ([]*domain.Agenda, error) {
-	query := "SELECT id, user_id, date, start_time, end_time FROM agendas"
+	query := "SELECT id, user_id, client_name, date, start_time, end_time FROM agendas"
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (r *AgendaRepository) GetAll() ([]*domain.Agenda, error) {
 	var agendas []*domain.Agenda
 	for rows.Next() {
 		var agenda domain.Agenda
-		err := rows.Scan(&agenda.ID, &agenda.UserID, &agenda.Date, &agenda.StartTime, &agenda.EndTime)
+		err := rows.Scan(&agenda.ID, &agenda.UserID, &agenda.ClientName, &agenda.Date, &agenda.StartTime, &agenda.EndTime)
 		if err != nil {
 			return nil, err
 		}
