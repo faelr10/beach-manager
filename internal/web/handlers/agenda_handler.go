@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"go/beach-manager/internal/dto"
 	"go/beach-manager/internal/service"
 	"go/beach-manager/internal/web/middleware"
