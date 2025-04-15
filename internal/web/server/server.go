@@ -69,7 +69,6 @@ func (s *Server) ConfigureRoutes() {
 	})
 
 	//Auth
-	s.router.Post("/auth/login", authHandler.Login)
 
 }
 

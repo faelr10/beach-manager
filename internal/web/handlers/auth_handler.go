@@ -32,16 +32,16 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Define o refresh_token como cookie HttpOnly
 	http.SetCookie(w, &http.Cookie{
 		Name:     "refresh_token",
 		Value:    output.RefreshToken,
 		HttpOnly: true,
-		Secure:   true, // usar true em produção com HTTPS
-		SameSite: http.SameSiteLaxMode,
+		Secure:   true, // obrigatório com SameSite=None
+		SameSite: http.SameSiteNoneMode, // 👈 permite o uso entre domínios (cross-site)
 		Path:     "/",
-		Expires:  time.Now().Add(7 * 24 * time.Hour), // mesmo tempo de vida do refresh
+		Expires:  time.Now().Add(7 * 24 * time.Hour),
 	})
+	
 
 	// Retorna apenas os dados públicos e access_token no corpo
 	response := map[string]string{
