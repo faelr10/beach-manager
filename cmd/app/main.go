@@ -26,9 +26,13 @@ func getEnv(key, defaulValue string) string {
 
 func main() {
 
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error loading .env file")
+	if os.Getenv("RENDER") == "" {
+		// Só carrega o .env local se não estiver no Render
+		if err := godotenv.Load(); err != nil {
+			log.Println("Aviso: não foi possível carregar o arquivo .env (ambiente local)")
+		}
 	}
+	
 
 	connStr := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
