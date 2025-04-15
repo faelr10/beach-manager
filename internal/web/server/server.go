@@ -35,15 +35,11 @@ func NewServer(userService *service.UserService, agendaService *service.AgendaSe
 func (s *Server) ConfigureRoutes() {
 	// ✅ Adiciona CORS globalmente
 	s.router.Use(cors.Handler(cors.Options{
-		AllowedOrigins: []string{
-			"http://localhost:3000",         // para testes locais
-			"https://front-beach-manager.vercel.app", // ✅ substitua pela URL real do seu projeto Vercel
-			"https://front-beach-manager.onrender.com",
-		},
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: false, // precisa ser false se usar "*"
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
 		MaxAge:           300,
 	}))
 
@@ -74,12 +70,12 @@ func (s *Server) ConfigureRoutes() {
 }
 
 func (s *Server) Start() error {
+	s.ConfigureRoutes() 
+
 	s.server = &http.Server{
 		Addr:    ":" + s.port,
-		Handler: s.router,
+		Handler: s.router, 
 	}
-
-	s.ConfigureRoutes()
 
 	return s.server.ListenAndServe()
 }
