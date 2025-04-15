@@ -10,6 +10,15 @@ type CreateAgendaInput struct {
 	EndTime    string `json:"end_time"`
 }
 
+type UpdateAgendaInput struct {
+	ID         string `json:"id"`
+	UserID     string `json:"user_id"`
+	ClientName string `json:"client_name"`
+	Date       string `json:"date"`
+	StartTime  string `json:"start_time"`
+	EndTime    string `json:"end_time"`
+}
+
 type AgendaOutput struct {
 	ID         string `json:"id"`
 	UserID     string `json:"user_id"`
@@ -23,6 +32,16 @@ type AgendaOutput struct {
 
 func ToAgenda(input CreateAgendaInput) *domain.Agenda {
 	return domain.NewAgenda(input.UserID, input.ClientName, input.Date, input.StartTime, input.EndTime)
+}
+func ToUpdateAgenda(input UpdateAgendaInput) *domain.Agenda {
+	return &domain.Agenda{
+		ID:         input.ID,
+		UserID:     input.UserID,
+		ClientName: input.ClientName,
+		Date:       input.Date,
+		StartTime:  input.StartTime,
+		EndTime:    input.EndTime,
+	}
 }
 
 func FromAgenda(agenda *domain.Agenda) AgendaOutput {

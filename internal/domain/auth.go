@@ -1,15 +1,17 @@
 package domain
 
 type Auth struct {
-	Token  string
-	UserID string
-	Email  string
+	Token        string
+	RefreshToken string
+	UserID       string
+	Email        string
 }
 
-func NewAuth(token, userID, email string) *Auth {
+func NewAuth(token, refreshToken, userID, email string) *Auth {
 	return &Auth{
-		Token:  token,
-		UserID: userID,
-		Email:  email,
+		Token:        token,
+		RefreshToken: refreshToken,
+		UserID:       userID,
+		Email:        email,
 	}
 }

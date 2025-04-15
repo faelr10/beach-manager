@@ -50,3 +50,46 @@ func (ag *AgendaService) GetAllAgendas() ([]*dto.AgendaOutput, error) {
 
 	return outputs, nil
 }
+
+func (ag *AgendaService) GetAllAgendasByUserID(userID string) ([]*dto.AgendaOutput, error) {
+	agendas, err := ag.repository.GetAllByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+	outputs := make([]*dto.AgendaOutput, len(agendas))
+	for i, agenda := range agendas {
+		output := dto.FromAgenda(agenda)
+		outputs[i] = &output
+	}
+	return outputs, nil
+}
+
+func (ag *AgendaService) UpdateAgenda(input dto.UpdateAgendaInput) (*dto.AgendaOutput, error) {
+
+	agenda, err := ag.repository.GetByID(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	agenda.ClientName = input.ClientName
+	agenda.Date = input.Date
+	agenda.StartTime = input.StartTime
+	agenda.EndTime = input.EndTime
+
+	err = ag.repository.Update(agenda)
+	if err != nil {
+		return nil, err
+	}
+
+	output := dto.FromAgenda(agenda)
+	return &output, nil
+
+}
+
+func (ag *AgendaService) DeleteAgenda(id string) error {
+	err := ag.repository.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

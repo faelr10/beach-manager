@@ -24,11 +24,22 @@ func AuthMiddleware(jwtProvider *provider.JWTProvider) func(http.Handler) http.H
 			token := strings.TrimPrefix(authHeader, "Bearer ")
 			userID, err := jwtProvider.DecodeToken(token)
 			if err != nil {
-				http.Error(w, "Invalid token", http.StatusUnauthorized)
+				// Tentativa de renovar usando refresh token
+				refreshToken := r.Header.Get("X-Refresh-Token")
+				newAccessToken, newUserID, refreshErr := jwtProvider.RefreshAccessToken(refreshToken)
+				if refreshErr != nil {
+					http.Error(w, "Unauthorized", http.StatusUnauthorized)
+					return
+				}
+
+				// Sucesso: define novo token no header da resposta
+				w.Header().Set("X-New-Access-Token", newAccessToken)
+				ctx := context.WithValue(r.Context(), UserIDKey, newUserID)
+				next.ServeHTTP(w, r.WithContext(ctx))
 				return
 			}
 
-			// injeta o userID no contexto da requisição
+			// Token válido
 			ctx := context.WithValue(r.Context(), UserIDKey, userID)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

@@ -28,19 +28,29 @@ func (s *AuthService) Login(input dto.LoginInput) (*dto.AuthOutput, error) {
 		return nil, domain.ErrAuthInvalidCredentials
 	}
 
-	token, err := s.jwt.GenerateToken(user.ID)
+	// Gerar access e refresh tokens
+	accessToken, err := s.jwt.GenerateToken(user.ID)
 	if err != nil {
 		return nil, err
 	}
 
+	refreshToken, err := s.jwt.GenerateRefreshToken(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Criar auth e DTO de resposta
 	auth := domain.NewAuth(
-		token,
+		accessToken,
+		refreshToken,
 		user.ID,
 		user.Email,
 	)
 
 	output := dto.FromAuth(auth)
-
 	return &output, nil
+}
 
+func (s *AuthService) RefreshAccessToken(refreshToken string) (string, string, error) {
+	return s.jwt.RefreshAccessToken(refreshToken)
 }

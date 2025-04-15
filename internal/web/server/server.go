@@ -1,13 +1,13 @@
 package server
 
 import (
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	"go/beach-manager/internal/provider"
 	"go/beach-manager/internal/service"
 	"go/beach-manager/internal/web/handlers"
 	"go/beach-manager/internal/web/middleware"
 	"net/http"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
 )
 
 type Server struct {
@@ -16,7 +16,7 @@ type Server struct {
 	userService   *service.UserService
 	agendaService *service.AgendaService
 	authService   *service.AuthService
-	jwtProvider   *provider.JWTProvider 
+	jwtProvider   *provider.JWTProvider
 	port          string
 }
 
@@ -43,7 +43,6 @@ func (s *Server) ConfigureRoutes() {
 		MaxAge:           300,
 	}))
 
-
 	userHandler := handlers.NewUserHandler(s.userService)
 	agendaHandler := handlers.NewAgendaHandler(s.agendaService)
 	authHandler := handlers.NewAuthHandler(s.authService)
@@ -52,19 +51,24 @@ func (s *Server) ConfigureRoutes() {
 	s.router.Post("/users", userHandler.CreateUser)
 	s.router.Get("/users/{id}", userHandler.GetById)
 	s.router.Post("/auth/login", authHandler.Login)
+	s.router.Post("/auth/refresh-token", authHandler.RefreshToken)
+
 
 	// Grupo de rotas protegidas
 	s.router.Route("/agendas", func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware(s.jwtProvider)) // aplica o middleware
 
 		r.Post("/", agendaHandler.CreateAgenda)
-		r.Get("/", agendaHandler.GetAllAgendas)
+		// r.Get("/", agendaHandler.GetAllAgendas)
+		r.Get("/", agendaHandler.GetAllAgendasByUserID)
 		r.Get("/{id}", agendaHandler.GetAgendaByID)
+		r.Put("/{id}", agendaHandler.UpdateAgenda)
+		r.Delete("/{id}", agendaHandler.DeleteAgenda)
 	})
 
 	//Auth
 	s.router.Post("/auth/login", authHandler.Login)
-	
+
 }
 
 func (s *Server) Start() error {

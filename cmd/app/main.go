@@ -52,7 +52,12 @@ func main() {
 		log.Fatal("JWT_EXP_MINUTES is invalid")
 	}
 
-	jwtProvider := provider.NewJWTProvider(secret, time.Duration(expMinutes)*time.Minute)
+	jwtProvider := provider.NewJWTProvider(
+		secret,
+		time.Duration(expMinutes)*time.Minute,
+		"minha_secret_refresh",
+		7*24*time.Hour,
+	)
 
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
