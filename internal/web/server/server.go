@@ -35,7 +35,10 @@ func NewServer(userService *service.UserService, agendaService *service.AgendaSe
 func (s *Server) ConfigureRoutes() {
 	// ✅ Adiciona CORS globalmente
 	s.router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins: []string{
+			"http://localhost:3000",         // para testes locais
+			"https://seuprojeto.vercel.app", // ✅ substitua pela URL real do seu projeto Vercel
+		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -52,7 +55,6 @@ func (s *Server) ConfigureRoutes() {
 	s.router.Get("/users/{id}", userHandler.GetById)
 	s.router.Post("/auth/login", authHandler.Login)
 	s.router.Post("/auth/refresh-token", authHandler.RefreshToken)
-
 
 	// Grupo de rotas protegidas
 	s.router.Route("/agendas", func(r chi.Router) {
