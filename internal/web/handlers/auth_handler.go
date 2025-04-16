@@ -36,11 +36,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		Name:     "refresh_token",
 		Value:    output.RefreshToken,
 		HttpOnly: true,
-		Secure:   true, // obrigatório com SameSite=None
-		SameSite: http.SameSiteNoneMode, // 👈 permite o uso entre domínios (cross-site)
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode, // necessário para cross-domain
 		Path:     "/",
 		Expires:  time.Now().Add(7 * 24 * time.Hour),
-	})
+	})	
 	
 
 	// Retorna apenas os dados públicos e access_token no corpo

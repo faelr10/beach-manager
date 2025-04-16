@@ -37,7 +37,6 @@ func (s *Server) ConfigureRoutes() {
 	s.router.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{
 			"http://localhost:3000",         // para testes locais
-			"https://front-beach-manager.vercel.app", // ✅ substitua pela URL real do seu projeto Vercel
 			"https://front-beach-manager.onrender.com",
 		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
