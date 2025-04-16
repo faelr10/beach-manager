@@ -5,7 +5,6 @@ import (
 	"go/beach-manager/internal/dto"
 	"go/beach-manager/internal/service"
 	"net/http"
-	"time"
 )
 
 type AuthHandler struct {
@@ -32,22 +31,15 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token",
-		Value:    output.RefreshToken,
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteNoneMode, // necessário para cross-domain
-		Path:     "/",
-		Expires:  time.Now().Add(7 * 24 * time.Hour),
-	})	
-	
+	// ❌ Não salva mais o refresh_token no cookie
+	// http.SetCookie(...) foi removido
 
-	// Retorna apenas os dados públicos e access_token no corpo
+	// ✅ Retorna o refresh_token no corpo da resposta
 	response := map[string]string{
-		"token": output.Token,
-		"email": output.Email,
-		"id":    output.UserID,
+		"token":         output.Token,
+		"refresh_token": output.RefreshToken,
+		"email":         output.Email,
+		"id":            output.UserID,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -56,17 +48,19 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
-	// Lê o cookie do refresh_token
-	cookie, err := r.Cookie("refresh_token")
-	if err != nil {
-		http.Error(w, "Refresh token ausente", http.StatusUnauthorized)
+	// Estrutura para decodificar o JSON recebido
+	var reqBody struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	// Decodifica o corpo JSON
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil || reqBody.RefreshToken == "" {
+		http.Error(w, "Refresh token ausente ou inválido", http.StatusBadRequest)
 		return
 	}
 
-	refreshToken := cookie.Value
-
 	// Gera novo access_token com base no refresh_token
-	newAccessToken, _, err := h.authService.RefreshAccessToken(refreshToken)
+	newAccessToken, _, err := h.authService.RefreshAccessToken(reqBody.RefreshToken)
 	if err != nil {
 		http.Error(w, "Refresh token inválido", http.StatusUnauthorized)
 		return
