@@ -57,6 +57,10 @@ func (s *Server) ConfigureRoutes() {
 	s.router.Post("/auth/login", authHandler.Login)
 	s.router.Post("/auth/refresh-token", authHandler.RefreshToken)
 
+	s.router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong"))
+	})
+
 	// Grupo de rotas protegidas
 	s.router.Route("/agendas", func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware(s.jwtProvider)) // aplica o middleware
