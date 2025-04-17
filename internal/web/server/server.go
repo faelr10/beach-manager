@@ -56,6 +56,9 @@ func (s *Server) ConfigureRoutes() {
 	s.router.Post("/auth/login", authHandler.Login)
 	s.router.Post("/auth/refresh-token", authHandler.RefreshToken)
 
+	//agendas
+	s.router.Get("/agenda-publica/{id}", agendaHandler.GetAllAgendasByUserIDFromURL)
+
 	s.router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
 	})

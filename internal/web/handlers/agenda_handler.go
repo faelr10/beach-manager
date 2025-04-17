@@ -99,6 +99,23 @@ func (h *AgendaHandler) GetAllAgendasByUserID(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(outputs)
 }
 
+// quero um GetAllAgendasByUserID mas pegando os dados do id passdo na url
+func (h *AgendaHandler) GetAllAgendasByUserIDFromURL(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		http.Error(w, "ID is required", http.StatusBadRequest)
+		return
+	}
+	outputs, err := h.agendaService.GetAllAgendasByUserID(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(outputs)
+}
+
 func (h *AgendaHandler) UpdateAgenda(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
