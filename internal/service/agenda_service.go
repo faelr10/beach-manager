@@ -16,15 +16,30 @@ func NewAgendaService(agendaRepository domain.AgendaRepository) *AgendaService {
 func (ag *AgendaService) CreateAgenda(input dto.CreateAgendaInput) (*dto.AgendaOutput, error) {
 	agenda := dto.ToAgenda(input)
 
-	err := ag.repository.Create(agenda)
+	// Verificar se há conflito de horário
+	agendas, err := ag.repository.GetAllByUserID(agenda.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, a := range agendas {
+		if a.Date == agenda.Date {
+			// Corrigir lógica de conflito
+			if agenda.StartTime < a.EndTime && agenda.EndTime > a.StartTime {
+				return nil, domain.ErrAgendaConflict
+			}
+		}
+	}
+
+	err = ag.repository.Create(agenda)
 	if err != nil {
 		return nil, err
 	}
 
 	output := dto.FromAgenda(agenda)
 	return &output, nil
-
 }
+
 
 func (ag *AgendaService) GetAgendaByID(id string) (*dto.AgendaOutput, error) {
 	agenda, err := ag.repository.GetByID(id)
