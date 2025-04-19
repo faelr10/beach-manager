@@ -26,13 +26,15 @@ func getEnv(key, defaulValue string) string {
 
 func main() {
 
+	log.Println("Iniciando aplicação...")
+
+
 	if os.Getenv("RENDER") == "" {
 		// Só carrega o .env local se não estiver no Render
 		if err := godotenv.Load(); err != nil {
 			log.Println("Aviso: não foi possível carregar o arquivo .env (ambiente local)")
 		}
 	}
-	
 
 	connStr := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
@@ -41,8 +43,10 @@ func main() {
 		getEnv("DB_USER", "postgres"),
 		getEnv("DB_PASSWORD", "postgres"),
 		getEnv("DB_NAME", "postgres"),
-		getEnv("DB_SSLMODE", "disable"),
+		getEnv("DB_SSLMODE", "require"),
 	)
+
+	log.Println("Conectando ao banco:", connStr)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -74,6 +78,7 @@ func main() {
 
 	srv := server.NewServer(userService, agendaService, authService, jwtProvider, port)
 
+	log.Println("Servidor iniciado na porta:", port)
 	if err := srv.Start(); err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}

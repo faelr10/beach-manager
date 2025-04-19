@@ -38,6 +38,7 @@ func (s *Server) ConfigureRoutes() {
 		AllowedOrigins: []string{
 			"http://localhost:3000",         // para testes locais
 			"https://front-beach-manager.onrender.com",
+			"https://master.d3uhax1xjrnrnb.amplifyapp.com/",
 		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
