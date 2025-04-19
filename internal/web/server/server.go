@@ -36,9 +36,10 @@ func (s *Server) ConfigureRoutes() {
 	// ✅ Adiciona CORS globalmente
 	s.router.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{
-			"http://localhost:3000",         // para testes locais
+			"http://localhost:3000", // para testes locais
 			"https://front-beach-manager.onrender.com",
 			"https://master.d3uhax1xjrnrnb.amplifyapp.com",
+			"https://www.manager-sportings.com.br",
 		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
@@ -81,11 +82,11 @@ func (s *Server) ConfigureRoutes() {
 }
 
 func (s *Server) Start() error {
-	s.ConfigureRoutes() 
+	s.ConfigureRoutes()
 
 	s.server = &http.Server{
 		Addr:    ":" + s.port,
-		Handler: s.router, 
+		Handler: s.router,
 	}
 
 	return s.server.ListenAndServe()
