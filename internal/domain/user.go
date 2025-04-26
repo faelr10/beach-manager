@@ -8,15 +8,17 @@ import (
 type User struct {
 	ID        string
 	Name      string
+	LocalName string
 	Email     string
 	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
-func NewUser(name, email, password string) *User {
+func NewUser(name, localName, email, password string) *User {
 	user := &User{
 		ID:        uuid.New().String(),
+		LocalName: localName,
 		Name:      name,
 		Email:     email,
 		Password:  password,

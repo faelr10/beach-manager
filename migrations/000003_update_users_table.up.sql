@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN local_name VARCHAR(100);
