@@ -55,20 +55,16 @@ func (s *Server) ConfigureRoutes() {
 	// Grupo de rotas públicas
 	s.router.Post("/users", userHandler.CreateUser)
 	s.router.Get("/users/{id}", userHandler.GetById)
+
 	s.router.Post("/auth/login", authHandler.Login)
 	s.router.Post("/auth/refresh-token", authHandler.RefreshToken)
 
-	//agendas
+	//agenda-publica
 	s.router.Get("/agenda-publica/{id}", agendaHandler.GetAllAgendasByUserIDFromURL)
-
-	s.router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("pong"))
-	})
 
 	// Grupo de rotas protegidas
 	s.router.Route("/agendas", func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware(s.jwtProvider)) // aplica o middleware
-
 		r.Post("/", agendaHandler.CreateAgenda)
 		// r.Get("/", agendaHandler.GetAllAgendas)
 		r.Get("/", agendaHandler.GetAllAgendasByUserID)
@@ -77,7 +73,10 @@ func (s *Server) ConfigureRoutes() {
 		r.Delete("/{id}", agendaHandler.DeleteAgenda)
 	})
 
-	//Auth
+	//rota teste
+	s.router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong"))
+	})
 
 }
 
